@@ -6,40 +6,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>embedding drift obs</title>
 
-  <!-- fonts -->
   <link rel="preconnect" href="https://api.fontshare.com">
   <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
   <link href="https://fonts.cdnfonts.com/css/jetbrains-mono" rel="stylesheet">
-
-  <!-- chart.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
   <style>
     :root {
       --bg: #0b0f13;
-      --bg2: #0f141a;
-      --bg3: #121923;
-      --bg4: #161f2a;
-      --panel: #10161d;
-      --panel2: #0e1319;
-      --line: #212b36;
-      --line2: #1a222c;
-      --text: #d5dbe5;
-      --muted: #93a0b0;
-      --faint: #657284;
-      --teal: #73c5c8;
-      --teal2: #4fa5a8;
-      --pink: #c97cab;
-      --amber: #e0ae67;
-      --green: #77c785;
-      --red: #dd7e88;
-      --blue: #76a8e8;
-      --vio: #8f84da;
-      --shadow: 0 10px 26px rgba(0, 0, 0, .28);
-      --r: 10px;
-      --r2: 13px;
-      --font: 'Satoshi', sans-serif;
+      --bg2: #0f1419;
+      --panel: #10161c;
+      --panel-soft: #0d1318;
+      --panel-2: #121a22;
+      --line: #1f2832;
+      --line2: #18212a;
+      --text: #d4dbe5;
+      --muted: #93a1b1;
+      --faint: #667385;
+      --warn: #d9a86d;
+      --bad: #c97cab;
+      --good: #7abf8a;
+      --teal: #72b9bc;
       --mono: 'JetBrains Mono', monospace;
+      --font: 'Satoshi', sans-serif;
+      --radius: 8px;
     }
 
     * {
@@ -58,11 +48,7 @@
     }
 
     body {
-      line-height: 1.35;
-      background:
-        radial-gradient(circle at 88% 0%, rgba(115, 197, 200, .06), transparent 18%),
-        radial-gradient(circle at 0% 100%, rgba(143, 132, 218, .04), transparent 24%),
-        linear-gradient(180deg, #0a0f12, #0b1014 30%, #0b0f13);
+      line-height: 1.35
     }
 
     button,
@@ -75,21 +61,31 @@
       border: 0;
       background: none;
       color: inherit;
-      cursor: pointer;
+      cursor: pointer
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse
+    }
+
+    .mono {
+      font-family: var(--mono);
+      font-variant-numeric: tabular-nums lining-nums
     }
 
     .app {
       display: grid;
-      grid-template-columns: 280px 1fr;
-      grid-template-rows: 54px 1fr;
+      grid-template-columns: 260px 1fr;
+      grid-template-rows: 50px 1fr;
       height: 100dvh;
     }
 
     .sidebar {
       grid-row: 1 / -1;
-      background: var(--panel2);
+      background: var(--panel-soft);
       border-right: 1px solid var(--line);
-      padding: 12px 12px 16px;
+      padding: 10px;
       overflow: auto;
     }
 
@@ -97,51 +93,49 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
-      padding: 0 14px;
+      gap: 12px;
+      padding: 0 12px;
       border-bottom: 1px solid var(--line);
-      background: rgba(11, 15, 19, .92);
-      backdrop-filter: blur(10px);
+      background: var(--bg);
     }
 
     .main {
-      padding: 12px 14px 18px;
       overflow: auto;
+      padding: 10px 12px 16px;
     }
 
     .brand {
       display: flex;
       gap: 10px;
       align-items: center;
-      padding: 5px 6px 12px;
+      padding: 4px 4px 10px;
       border-bottom: 1px solid var(--line2);
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .brand svg {
-      width: 22px;
-      height: 22px;
+      width: 20px;
+      height: 20px;
       color: var(--teal)
     }
 
     .brand h1 {
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 900;
-      letter-spacing: -.04em;
+      letter-spacing: -.03em;
       text-transform: lowercase;
     }
 
     .brand p {
       font-size: 11px;
       color: var(--muted);
-      margin-top: 1px;
     }
 
     .sec-label {
-      margin: 14px 6px 8px;
+      margin: 12px 4px 6px;
       font-size: 10px;
-      letter-spacing: .14em;
       text-transform: uppercase;
+      letter-spacing: .12em;
       color: var(--faint);
       font-weight: 800;
     }
@@ -149,378 +143,307 @@
     .nav-item {
       width: 100%;
       text-align: left;
-      padding: 8px 10px;
-      border-radius: 8px;
+      padding: 7px 8px;
+      font-size: 12px;
       color: var(--muted);
-      font-size: 13px;
+      border-radius: 6px;
       margin-bottom: 2px;
     }
 
     .nav-item.active,
     .nav-item:hover {
-      background: #18212b;
+      background: #161e27;
       color: var(--text);
     }
 
-    .alert-card,
-    .note-card {
+    .sidebar-note {
       border: 1px solid var(--line);
-      background: var(--bg3);
-      border-radius: 10px;
-      padding: 9px 10px;
-      margin-bottom: 8px;
-      font-size: 12px;
+      background: var(--panel);
+      border-radius: 8px;
+      padding: 8px 9px;
+      margin-bottom: 7px;
+      font-size: 11.5px;
       color: var(--muted);
     }
 
-    .alert-card strong,
-    .note-card strong {
+    .sidebar-note strong {
       color: var(--text)
     }
 
-    .alert-card.warn {
-      border-color: rgba(224, 174, 103, .36)
-    }
-
-    .alert-card.err {
-      border-color: rgba(201, 124, 171, .38)
-    }
-
-    .alert-card.ok {
-      border-color: rgba(119, 199, 133, .28)
-    }
-
     .title h2 {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 900;
-      letter-spacing: -.04em;
       text-transform: lowercase;
+      letter-spacing: -.03em;
     }
 
     .title p {
       font-size: 11px;
       color: var(--muted);
-      margin-top: 2px;
+      margin-top: 1px;
     }
 
     .actions {
       display: flex;
-      align-items: center;
-      gap: 8px;
+      gap: 7px;
       flex-wrap: wrap;
     }
 
     .btn {
-      height: 31px;
-      padding: 0 10px;
+      height: 28px;
+      padding: 0 9px;
       border: 1px solid var(--line);
-      background: #131922;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 700;
+      background: var(--panel);
+      border-radius: 7px;
+      font-size: 11px;
       color: var(--muted);
+      font-weight: 700;
+    }
+
+    .btn.dim {
+      opacity: .45;
+      cursor: not-allowed
+    }
+
+    .btn.warn {
+      color: var(--warn)
     }
 
     .btn.active {
       color: var(--text)
     }
 
-    .btn.warn {
-      color: var(--amber)
-    }
-
-    .btn.dim {
-      opacity: .44;
-      cursor: not-allowed;
-    }
-
     .layout {
       display: grid;
-      gap: 12px;
+      gap: 10px
     }
 
     .card {
-      background: linear-gradient(180deg, rgba(255, 255, 255, .02), rgba(255, 255, 255, .01));
+      background: var(--panel);
       border: 1px solid var(--line);
-      border-radius: var(--r2);
-      box-shadow: var(--shadow);
+      border-radius: 10px;
     }
 
     .card-h {
       display: flex;
       justify-content: space-between;
-      gap: 10px;
+      gap: 8px;
       align-items: flex-start;
-      padding: 11px 12px 0;
+      padding: 9px 10px 0;
     }
 
     .card-h h3 {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 800;
       letter-spacing: -.02em;
     }
 
     .card-h p {
-      font-size: 12px;
+      font-size: 11.5px;
       color: var(--muted);
-      margin-top: 4px;
+      margin-top: 3px;
     }
 
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 8px;
-      border: 1px solid var(--line);
+    .tag {
+      font-size: 10px;
+      color: var(--muted);
+      border: 1px solid var(--line2);
       border-radius: 999px;
+      padding: 3px 7px;
       white-space: nowrap;
-      font-size: 11px;
       font-weight: 800;
-      color: var(--muted);
-    }
-
-    .badge.warn {
-      color: var(--amber)
-    }
-
-    .badge.err {
-      color: var(--pink)
-    }
-
-    .badge.ok {
-      color: var(--green)
-    }
-
-    .mono {
-      font-family: var(--mono);
-      font-variant-numeric: tabular-nums lining-nums;
     }
 
     .metrics {
       display: grid;
       grid-template-columns: repeat(6, minmax(0, 1fr));
-      gap: 8px;
-      padding: 12px;
+      gap: 7px;
+      padding: 10px;
     }
 
     .metric {
-      min-height: 92px;
-      background: #10161e;
+      background: var(--panel-2);
       border: 1px solid var(--line2);
-      border-radius: 10px;
-      padding: 10px;
+      border-radius: 8px;
+      padding: 9px;
+      min-height: 82px;
     }
 
     .metric label {
       display: block;
       font-size: 10px;
-      letter-spacing: .12em;
       text-transform: uppercase;
+      letter-spacing: .12em;
       color: var(--faint);
-      margin-bottom: 8px;
+      margin-bottom: 7px;
       font-weight: 800;
     }
 
     .metric .v {
-      font-size: 22px;
+      font-size: 21px;
       font-weight: 900;
-      letter-spacing: -.05em;
+      letter-spacing: -.04em;
     }
 
     .metric .sub {
+      margin-top: 6px;
       font-size: 11px;
       color: var(--muted);
-      margin-top: 7px;
     }
 
     .metric .delta {
-      margin-top: 8px;
-      font: 700 11px/1 var(--mono);
+      margin-top: 7px;
+      font: 700 10.5px/1 var(--mono);
     }
 
     .down {
-      color: var(--pink)
-    }
-
-    .up {
-      color: var(--green)
+      color: var(--bad)
     }
 
     .flat {
-      color: var(--amber)
+      color: var(--warn)
     }
 
-    .hero {
+    .up {
+      color: var(--good)
+    }
+
+    .mid {
       display: grid;
-      grid-template-columns: 1.18fr .92fr;
-      gap: 12px;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 10px;
     }
 
     .arch {
-      padding: 12px;
+      padding: 10px
     }
 
     .arch svg {
+      display: block;
       width: 100%;
       height: auto;
-      display: block;
-      background: #0c1218;
+      background: #0b1015;
       border: 1px solid var(--line2);
-      border-radius: 10px;
+      border-radius: 8px;
     }
 
     .ops {
-      padding: 10px 12px 12px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
+      padding: 8px 10px 10px
     }
 
     th,
     td {
       text-align: left;
       vertical-align: top;
-      padding: 7px 9px;
+      padding: 7px 8px;
       border-bottom: 1px solid var(--line2);
     }
 
     th {
       font-size: 10px;
-      color: var(--faint);
       text-transform: uppercase;
       letter-spacing: .12em;
+      color: var(--faint);
       font-weight: 800;
     }
 
     td {
-      font-size: 12px;
+      font-size: 11.5px;
       color: var(--text);
     }
 
-    .charts {
+    .lower {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 12px;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
     }
 
     .chart-wrap {
-      padding: 8px 12px 12px;
+      padding: 8px 10px 10px
     }
 
     .chart-wrap canvas {
-      height: 236px !important;
+      height: 220px !important
     }
 
     .debug {
       display: grid;
-      grid-template-columns: 1.05fr .95fr;
-      gap: 12px;
-    }
-
-    .log-card {
-      background: #0d1218;
-      border: 1px solid #222a34;
+      grid-template-columns: 1.08fr .92fr;
+      gap: 10px;
     }
 
     .logbox {
+      margin-top: 8px;
       background: #091016;
       border-top: 1px solid var(--line2);
-      border-radius: 0 0 13px 13px;
-      padding: 10px 12px;
-      font: 11.5px/1.55 var(--mono);
-      color: #aab6c6;
-      min-height: 318px;
+      border-radius: 0 0 10px 10px;
+      padding: 10px;
+      min-height: 300px;
       overflow: auto;
+      font: 11px/1.52 var(--mono);
+      color: #aab5c5;
     }
 
     .logbox .teal {
-      color: #8fe0e1
+      color: #8fd8d9
     }
 
     .logbox .hot {
-      color: #ffd090
+      color: #f0c285
     }
 
     .logbox .bad {
-      color: #ff9ecd
+      color: #f0a0c9
     }
 
     .logbox .ok {
-      color: #99dfa3
+      color: #9bd7a3
     }
 
     .logbox .mut {
-      color: #7c8797
+      color: #7c8798
     }
 
     .workflow {
-      padding: 10px 12px 12px;
+      padding: 8px 10px 10px
     }
 
-    .steps {
+    .workflow-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 8px;
-      margin-top: 10px;
+      gap: 7px;
+      margin-top: 9px;
     }
 
-    .step {
-      background: #10161e;
+    .wf {
+      background: var(--panel-2);
       border: 1px solid var(--line2);
-      border-radius: 10px;
-      padding: 10px;
+      border-radius: 8px;
+      padding: 8px;
     }
 
-    .step h4 {
+    .wf h4 {
       font-size: 12px;
+      margin-bottom: 5px;
       font-weight: 800;
-      margin-bottom: 6px;
     }
 
-    .step p {
-      font-size: 12px;
+    .wf p {
+      font-size: 11.5px;
       color: var(--muted);
     }
 
-    .split {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+    .scratch {
+      padding: 8px 10px 10px
     }
 
-    .notes {
-      padding: 10px 12px 12px;
-    }
-
-    .notes ul {
-      list-style: none;
-      display: grid;
-      gap: 8px;
-    }
-
-    .notes li {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .tiny {
-      font-size: 11px;
-      color: var(--faint);
-    }
-
-    .footer-note {
-      padding: 0 12px 12px;
-    }
-
-    .footer-note pre {
-      background: #0d1218;
-      border: 1px solid var(--line2);
-      border-radius: 10px;
-      padding: 10px;
+    .scratch pre {
       white-space: pre-wrap;
-      color: #98a6b7;
+      background: #0c1218;
+      border: 1px solid var(--line2);
+      border-radius: 8px;
+      padding: 10px;
+      color: #97a4b6;
       font: 11px/1.45 var(--mono);
     }
 
@@ -530,7 +453,7 @@
       }
     }
 
-    @media (max-width:1180px) {
+    @media (max-width:1100px) {
       .app {
         grid-template-columns: 1fr
       }
@@ -539,17 +462,11 @@
         display: none
       }
 
-      .hero,
-      .charts,
+      .mid,
+      .lower,
       .debug,
-      .split,
-      .steps {
+      .workflow-grid {
         grid-template-columns: 1fr 1fr
-      }
-
-      .topbar,
-      .main {
-        grid-column: 1
       }
     }
 
@@ -566,21 +483,20 @@
 
       .main {
         overflow: visible;
-        padding: 10px
+        padding: 8px
       }
 
       .topbar {
         position: sticky;
         top: 0;
-        z-index: 8
+        z-index: 5
       }
 
-      .hero,
-      .charts,
+      .metrics,
+      .mid,
+      .lower,
       .debug,
-      .split,
-      .steps,
-      .metrics {
+      .workflow-grid {
         grid-template-columns: 1fr
       }
 
@@ -595,91 +511,47 @@
   <div class="app">
     <aside class="sidebar">
       <div class="brand">
-        <svg viewBox="0 0 64 64" fill="none" aria-label="embedding drift obs logo">
+        <svg viewBox="0 0 64 64" fill="none" aria-label="logo">
           <path d="M14 50V14h12.5c13.9 0 23.5 7.6 23.5 18.5S40.4 50 26.5 50H14Z" stroke="currentColor"
             stroke-width="5" />
           <path d="M22 24h7.5c7 0 11.5 3.6 11.5 8.5S36.5 41 29.5 41H22" stroke="currentColor" stroke-width="5" />
         </svg>
         <div>
           <h1>embedding drift obs</h1>
-          <p>internal / wip / hf-rp-search-vs only</p>
+          <p>internal / wip / rp-heavy incident view</p>
         </div>
       </div>
 
       <div class="sec-label">scope</div>
       <button class="nav-item active">x-surface drift</button>
-      <button class="nav-item">replay cohorts</button>
-      <button class="nav-item">ann lag + fresh-tier</button>
+      <button class="nav-item">ann lag</button>
+      <button class="nav-item">replay cohort</button>
       <button class="nav-item">cache freshness</button>
-      <button class="nav-item">ver skew</button>
       <button class="nav-item">feature snap gaps</button>
 
-      <div class="sec-label">alert cards</div>
-      <div class="alert-card warn">
-        <strong>rp_ann stale-ish</strong><br>
-        17.8% reqs in <span class="mono">ap-south-1</span> served embeds older than 12h.
-      </div>
-      <div class="alert-card err">
-        <strong>idx skew</strong><br>
-        <span class="mono">mm_embed_v47</span> global=82% but <span class="mono">rp-shard-17</span> still on <span
-          class="mono">v46</span>.
-      </div>
-      <div class="alert-card ok">
-        <strong>raw cache hit ok</strong><br>
-        94.8% hit rate. still maybe bad after freshness weighting.
-      </div>
-      <div class="alert-card warn">
-        <strong>engage mismatch</strong><br>
-        ctr flat-ish while saves keep sliding. not a clean outage shape.
-      </div>
+      <div class="sec-label">alerts</div>
+      <div class="sidebar-note"><strong>rp_ann stale-ish</strong><br>17.8% reqs in <span class="mono">ap-south-1</span>
+        served embeds older than 12h.</div>
+      <div class="sidebar-note"><strong>idx skew</strong><br><span class="mono">rp-shard-17</span> still on <span
+          class="mono">v46</span> while embed rollout is <span class="mono">v47@82%</span>.</div>
+      <div class="sidebar-note"><strong>engagement mismatch</strong><br>CTR flat-ish; saves keep slipping.</div>
 
-      <div class="sec-label">rollout notes</div>
-      <div class="note-card">
-        <strong>r47</strong><br>
-        APAC rollout held at 61%. compare_shards button still flaky.
-      </div>
-      <div class="note-card">
-        <strong>rp path</strong><br>
-        fresh-tier merge maybe finished? logs disagree on 08:30/08:42 cutoff.
-      </div>
-      <div class="note-card">
-        <strong>search side</strong><br>
-        search seems mostly on <span class="mono">srch_v47_20260516_05</span>; overlap still dropping vs RP.
-      </div>
-
-      <div class="sec-label">replay backlog</div>
-      <div class="note-card">
-        <strong>queue</strong><br>
-        <span class="mono">replay_diff_worker</span> failed=37 / retry=84 / p95=18m09s.
-      </div>
-      <div class="note-card">
-        <strong>cohort</strong><br>
-        fashion+shopping APAC user snap has best signal, but feature snapshot missing on ~6%.
-      </div>
-      <div class="note-card">
-        <strong>backfill</strong><br>
-        <span class="mono">ann_backfill_queue</span> lag still > 14m on two builders.
-      </div>
-
-      <div class="sec-label">scratch / todo notes</div>
-      <div class="note-card">TODO(rk): verify mod sync on RP path. old issue maybe unrelated.</div>
-      <div class="note-card">TODO: add shard table w/ host drain_state + idx age. not wired.</div>
-      <div class="note-card">maybe check cache invalidation on VS too? low traffic though.</div>
-      <div class="note-card">tmp note: homefeed overlap baseline maybe inflated by replay cohort selection. not sure.
-      </div>
+      <div class="sec-label">scratch</div>
+      <div class="sidebar-note">TODO(rk): verify mod sync on RP path.</div>
+      <div class="sidebar-note">compare_shards still busted on mixed ver tags.</div>
+      <div class="sidebar-note">homefeed baseline may be slightly cohort-biased.</div>
     </aside>
 
     <header class="topbar">
       <div class="title">
         <h2>embedding drift obs</h2>
-        <p>HF / RP / Search / VS consistency; mostly looking at RP right now</p>
+        <p>HF / RP / Search / VS consistency; mostly debugging RP incident window</p>
       </div>
       <div class="actions">
         <button class="btn warn">data age ~6m</button>
         <button class="btn active">run replay</button>
         <button class="btn dim" aria-disabled="true">compare shards</button>
         <button class="btn dim" aria-disabled="true">freeze feats</button>
-        <button class="btn active">dump csv</button>
         <button class="btn">idx-only sim</button>
       </div>
     </header>
@@ -689,16 +561,16 @@
         <section class="card">
           <div class="card-h">
             <div>
-              <h3>core signals</h3>
-              <p>age / overlap / kendall norm / fw cache hit / engagement mismatch / rollout pct</p>
+              <h3>drift summary</h3>
+              <p>main signals used for triage; not all of them agree</p>
             </div>
-            <div class="badge warn">suspected drift</div>
+            <div class="tag">suspected drift</div>
           </div>
           <div class="metrics">
             <div class="metric">
               <label>p95 embed age</label>
               <div class="v mono">18.4h</div>
-              <div class="sub">RP, <span class="mono">ap-south-1</span></div>
+              <div class="sub">RP / ap-south-1</div>
               <div class="delta down">target &lt; 6h</div>
             </div>
             <div class="metric">
@@ -708,21 +580,21 @@
               <div class="delta down">0.41 7d ago</div>
             </div>
             <div class="metric">
-              <label>rank divergence</label>
+              <label>kendall norm</label>
               <div class="v mono">0.36</div>
-              <div class="sub">kendall norm</div>
-              <div class="delta down">cohort p75 = 0.44</div>
+              <div class="sub">rank divergence</div>
+              <div class="delta down">cohort p75=0.44</div>
             </div>
             <div class="metric">
               <label>fw cache hit</label>
               <div class="v mono">71.2%</div>
-              <div class="sub">raw hit = 94.8%</div>
+              <div class="sub">raw hit 94.8%</div>
               <div class="delta flat">stale-hit risk 23.4%</div>
             </div>
             <div class="metric">
               <label>save delta</label>
               <div class="v mono">-4.9%</div>
-              <div class="sub">RP matched cohort</div>
+              <div class="sub">matched cohort</div>
               <div class="delta down">CTR still +0.2%</div>
             </div>
             <div class="metric">
@@ -734,86 +606,76 @@
           </div>
         </section>
 
-        <section class="hero">
+        <section class="mid">
           <article class="card">
             <div class="card-h">
               <div>
-                <h3>RP replay path</h3>
-                <p>reduced graph. enough for this incident.</p>
+                <h3>serving path sketch</h3>
+                <p>reduced view for current incident only</p>
               </div>
-              <div class="badge err">possible skew</div>
+              <div class="tag">possible skew</div>
             </div>
             <div class="arch">
-              <svg viewBox="0 0 760 380" fill="none" xmlns="http://www.w3.org/2000/svg" role="img"
-                aria-label="reduced architecture diagram">
+              <svg viewBox="0 0 760 340" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
-                  <marker id="arrow" viewBox="0 0 10 10" refX="8.2" refY="5" markerWidth="8" markerHeight="8"
-                    orient="auto-start-reverse">
+                  <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7"
+                    orient="auto">
                     <path d="M0 0L10 5L0 10Z" fill="#516071" />
                   </marker>
                 </defs>
 
-                <rect x="22" y="34" width="148" height="72" rx="10" fill="#131a22" stroke="#2b3441" />
-                <text x="40" y="60" fill="#d6deea" font-size="14" font-family="Satoshi" font-weight="700">embedding
+                <rect x="20" y="28" width="140" height="64" rx="8" fill="#131a22" stroke="#2a3440" />
+                <text x="36" y="54" fill="#d4dbe5" font-size="13" font-family="Satoshi" font-weight="700">embedding
                   registry</text>
-                <text x="40" y="81" fill="#e0ae67" font-size="12" font-family="JetBrains Mono">mm_embed_v46 / v47</text>
+                <text x="36" y="73" fill="#d9a86d" font-size="11" font-family="JetBrains Mono">mm_embed_v46 / v47</text>
 
-                <rect x="204" y="34" width="154" height="72" rx="10" fill="#131a22" stroke="#2b3441" />
-                <text x="221" y="60" fill="#d6deea" font-size="14" font-family="Satoshi" font-weight="700">ANN build +
+                <rect x="194" y="28" width="150" height="64" rx="8" fill="#131a22" stroke="#2a3440" />
+                <text x="210" y="54" fill="#d4dbe5" font-size="13" font-family="Satoshi" font-weight="700">ANN build +
                   merge</text>
-                <text x="221" y="81" fill="#93a0b0" font-size="12" font-family="Satoshi">fresh-tier merge / backfill /
-                  compaction</text>
+                <text x="210" y="73" fill="#93a1b1" font-size="11" font-family="Satoshi">fresh-tier merge /
+                  backfill</text>
 
-                <rect x="392" y="34" width="156" height="72" rx="10" fill="#131a22" stroke="#6b3d5a" />
-                <text x="410" y="60" fill="#d6deea" font-size="14" font-family="Satoshi" font-weight="700">ANN
+                <rect x="378" y="28" width="150" height="64" rx="8" fill="#131a22" stroke="#694357" />
+                <text x="395" y="54" fill="#d4dbe5" font-size="13" font-family="Satoshi" font-weight="700">ANN
                   shards</text>
-                <text x="410" y="81" fill="#c97cab" font-size="12" font-family="JetBrains Mono">rp-shard-17 maybe
+                <text x="395" y="73" fill="#c97cab" font-size="11" font-family="JetBrains Mono">rp-shard-17 maybe
                   stale</text>
 
-                <rect x="582" y="34" width="152" height="72" rx="10" fill="#131a22" stroke="#2b3441" />
-                <text x="599" y="60" fill="#d6deea" font-size="14" font-family="Satoshi" font-weight="700">embedding
+                <rect x="562" y="28" width="150" height="64" rx="8" fill="#131a22" stroke="#2a3440" />
+                <text x="579" y="54" fill="#d4dbe5" font-size="13" font-family="Satoshi" font-weight="700">embedding
                   cache</text>
-                <text x="599" y="81" fill="#93a0b0" font-size="12" font-family="Satoshi">mcrouter / stale-hit
-                  risk</text>
+                <text x="579" y="73" fill="#93a1b1" font-size="11" font-family="Satoshi">mcrouter / invalidation
+                  lag?</text>
 
-                <rect x="112" y="182" width="170" height="76" rx="10" fill="#131a22" stroke="#324051" />
-                <text x="130" y="210" fill="#d6deea" font-size="14" font-family="Satoshi"
+                <rect x="118" y="168" width="172" height="70" rx="8" fill="#131a22" stroke="#324050" />
+                <text x="134" y="195" fill="#d4dbe5" font-size="13" font-family="Satoshi"
                   font-weight="700">surface_fanout_svc</text>
-                <text x="130" y="231" fill="#93a0b0" font-size="12" font-family="Satoshi">Home Feed / RP / Search /
-                  VS</text>
+                <text x="134" y="214" fill="#93a1b1" font-size="11" font-family="Satoshi">HF / RP / Search / VS</text>
 
-                <rect x="308" y="182" width="168" height="76" rx="10" fill="#131a22" stroke="#324051" />
-                <text x="326" y="210" fill="#d6deea" font-size="14" font-family="Satoshi" font-weight="700">ranker /
+                <rect x="320" y="168" width="160" height="70" rx="8" fill="#131a22" stroke="#324050" />
+                <text x="337" y="195" fill="#d4dbe5" font-size="13" font-family="Satoshi" font-weight="700">ranker /
                   filter</text>
-                <text x="326" y="231" fill="#93a0b0" font-size="12" font-family="Satoshi">feat fetch + mod sync +
-                  rerank</text>
+                <text x="337" y="214" fill="#93a1b1" font-size="11" font-family="Satoshi">feat fetch + mod sync</text>
 
-                <rect x="502" y="182" width="186" height="76" rx="10" fill="#131a22" stroke="#326063" />
-                <text x="520" y="210" fill="#d6deea" font-size="14" font-family="Satoshi"
+                <rect x="510" y="168" width="178" height="70" rx="8" fill="#131a22" stroke="#2e6162" />
+                <text x="528" y="195" fill="#d4dbe5" font-size="13" font-family="Satoshi"
                   font-weight="700">replay_diff_worker</text>
-                <text x="520" y="231" fill="#73c5c8" font-size="12" font-family="JetBrains Mono">frozen feature snapshot
-                  / swap idx only</text>
+                <text x="528" y="214" fill="#72b9bc" font-size="11" font-family="JetBrains Mono">swap idx only / frozen
+                  snapshot</text>
 
-                <rect x="268" y="308" width="226" height="46" rx="10" fill="#121821" stroke="#2b3441" />
-                <text x="287" y="336" fill="#93a0b0" font-size="12" font-family="Satoshi">cache bypass path exists but
-                  not always comparable</text>
+                <line x1="160" y1="60" x2="194" y2="60" stroke="#516071" stroke-width="2" marker-end="url(#arrow)" />
+                <line x1="344" y1="60" x2="378" y2="60" stroke="#516071" stroke-width="2" marker-end="url(#arrow)" />
+                <line x1="528" y1="60" x2="562" y2="60" stroke="#516071" stroke-width="2" marker-end="url(#arrow)" />
 
-                <line x1="170" y1="70" x2="204" y2="70" stroke="#516071" stroke-width="2" marker-end="url(#arrow)" />
-                <line x1="358" y1="70" x2="392" y2="70" stroke="#516071" stroke-width="2" marker-end="url(#arrow)" />
-                <line x1="548" y1="70" x2="582" y2="70" stroke="#516071" stroke-width="2" marker-end="url(#arrow)" />
+                <path d="M452 92V144H204V168" stroke="#516071" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+                <path d="M638 92V144H400V168" stroke="#516071" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+                <line x1="290" y1="203" x2="320" y2="203" stroke="#516071" stroke-width="2" marker-end="url(#arrow)" />
+                <line x1="480" y1="203" x2="510" y2="203" stroke="#516071" stroke-width="2" marker-end="url(#arrow)" />
 
-                <path d="M470 106V158H196V182" stroke="#516071" stroke-width="2" fill="none" marker-end="url(#arrow)" />
-                <path d="M658 106V154H392V182" stroke="#516071" stroke-width="2" fill="none" marker-end="url(#arrow)" />
-                <line x1="282" y1="220" x2="308" y2="220" stroke="#516071" stroke-width="2" marker-end="url(#arrow)" />
-                <line x1="476" y1="220" x2="502" y2="220" stroke="#516071" stroke-width="2" marker-end="url(#arrow)" />
-                <path d="M595 258V294H494" stroke="#516071" stroke-width="2" stroke-dasharray="5 5" fill="none"
-                  marker-end="url(#arrow)" />
-
-                <text x="445" y="124" fill="#93a0b0" font-size="11" font-family="Satoshi">rebuild lag?</text>
-                <text x="628" y="123" fill="#93a0b0" font-size="11" font-family="Satoshi">cache age skew?</text>
-                <text x="140" y="274" fill="#c97cab" font-size="11" font-family="Satoshi">surface fanout mismatch
+                <text x="425" y="108" fill="#93a1b1" font-size="11" font-family="Satoshi">rebuild lag?</text>
+                <text x="596" y="108" fill="#93a1b1" font-size="11" font-family="Satoshi">stale-hit risk?</text>
+                <text x="130" y="254" fill="#c97cab" font-size="11" font-family="Satoshi">surface fanout mismatch
                   window</text>
-                <text x="506" y="274" fill="#73c5c8" font-size="11" font-family="Satoshi">replay isolate path</text>
               </svg>
             </div>
           </article>
@@ -822,9 +684,9 @@
             <div class="card-h">
               <div>
                 <h3>operational snapshot</h3>
-                <p>mixed. not everything lines up.</p>
+                <p>subsystem view; more useful than global averages</p>
               </div>
-              <div class="badge ok">canary paused</div>
+              <div class="tag">mixed state</div>
             </div>
             <div class="ops">
               <table>
@@ -839,52 +701,42 @@
                   <tr>
                     <td>rollout skew</td>
                     <td class="mono">v47 global 82% / APAC 61%</td>
-                    <td>not all shards rebuilt; rollout gate held</td>
+                    <td>not all RP shards rebuilt</td>
                   </tr>
                   <tr>
                     <td>stale requests</td>
-                    <td class="mono">17.8% &gt; 12h age</td>
-                    <td>mostly <span class="mono">ap-south-1</span>; global median hides it</td>
+                    <td class="mono">17.8% &gt;12h</td>
+                    <td>mostly <span class="mono">ap-south-1</span></td>
                   </tr>
                   <tr>
                     <td>replay runtime</td>
                     <td class="mono">p50 11m42s / p95 18m09s</td>
-                    <td>retry storms on two cohorts after 08:30 swap</td>
+                    <td>retry storms after swap window</td>
                   </tr>
                   <tr>
                     <td>cache quality</td>
                     <td class="mono">raw 94.8% / fw 71.2%</td>
-                    <td>healthy-looking hit rate masks old embeds</td>
+                    <td>healthy-looking but misleading</td>
                   </tr>
                   <tr>
-                    <td>missing feature snapshots</td>
+                    <td>missing snapshots</td>
                     <td class="mono">6.1%</td>
-                    <td><span class="mono">shop_intent_7d</span>, <span class="mono">vis_ctx_v2</span> most common</td>
+                    <td><span class="mono">shop_intent_7d</span>, <span class="mono">vis_ctx_v2</span></td>
                   </tr>
                   <tr>
-                    <td>engagement inconsistency</td>
+                    <td>engage inconsistency</td>
                     <td class="mono">CTR +0.2% / saves -4.9%</td>
-                    <td>maybe query mix; maybe lower semantic stability</td>
+                    <td>not a clean outage shape</td>
                   </tr>
                   <tr>
-                    <td>mod sync uncertainty</td>
+                    <td>mod sync</td>
                     <td class="mono">unknown</td>
-                    <td>last good check 07:54Z; old note says RP path lagged before</td>
+                    <td>last good check 07:54Z</td>
                   </tr>
                   <tr>
                     <td>shard anomaly</td>
-                    <td class="mono">rp-shard-17 / host=rp-iad-17b</td>
-                    <td>idx age 19h; drain_state unclear</td>
-                  </tr>
-                  <tr>
-                    <td>VS path</td>
-                    <td class="mono">low traffic / overlap noisy</td>
-                    <td>probably not same issue, but not ruled out</td>
-                  </tr>
-                  <tr>
-                    <td>replay cohort note</td>
-                    <td class="mono">fashion_apac_r47</td>
-                    <td>highest divergence + snapshot instability</td>
+                    <td class="mono">rp-shard-17 / rp-iad-17b</td>
+                    <td>idx age 19h</td>
                   </tr>
                 </tbody>
               </table>
@@ -892,27 +744,14 @@
           </article>
         </section>
 
-        <section class="charts">
-          <article class="card">
-            <div class="card-h">
-              <div>
-                <h3>embedding age dist</h3>
-                <p>avg hides tail</p>
-              </div>
-              <div class="badge warn">tail bad</div>
-            </div>
-            <div class="chart-wrap">
-              <canvas id="ageChart"></canvas>
-            </div>
-          </article>
-
+        <section class="lower">
           <article class="card">
             <div class="card-h">
               <div>
                 <h3>topK overlap trend</h3>
-                <p>ctr flat-ish. overlap not.</p>
+                <p>overlap dropped while CTR stayed flat-ish</p>
               </div>
-              <div class="badge err">HF↔RP down</div>
+              <div class="tag">HF↔RP down</div>
             </div>
             <div class="chart-wrap">
               <canvas id="overlapChart"></canvas>
@@ -923,9 +762,9 @@
             <div class="card-h">
               <div>
                 <h3>rank divergence by cohort</h3>
-                <p>2 cohorts still noisy</p>
+                <p>APAC fashion/shopping still the noisiest</p>
               </div>
-              <div class="badge">unknown pct incl.</div>
+              <div class="tag">kendall norm</div>
             </div>
             <div class="chart-wrap">
               <canvas id="rankChart"></canvas>
@@ -934,13 +773,13 @@
         </section>
 
         <section class="debug">
-          <article class="card log-card">
+          <article class="card">
             <div class="card-h">
               <div>
-                <h3>inc_4521 / partial logs</h3>
-                <p>not fully normalized. copied from worker output + notes.</p>
+                <h3>incident log</h3>
+                <p>replay output + copied notes; not normalized</p>
               </div>
-              <div class="badge warn">wip</div>
+              <div class="tag">inc_4521</div>
             </div>
             <div class="logbox">
               <span class="teal">2026-05-16T09:18:07Z</span> replay_job.start cohort=<span
@@ -949,10 +788,6 @@
               <span class="teal">2026-05-16T09:18:11Z</span> queue.read q=<span class="mono">ann_backfill_queue</span>
               lag_s=<span class="hot">842</span> retry=<span class="hot">4</span> host=<span
                 class="mono">ann-merge-02</span><br>
-              <span class="teal">2026-05-16T09:18:55Z</span> retriever.homefeed overlap_baseline=<span
-                class="ok">0.41</span> idx=<span class="mono">hf_v47_20260516_06</span><br>
-              <span class="teal">2026-05-16T09:19:04Z</span> retriever.search overlap_baseline=<span
-                class="ok">0.38</span> idx=<span class="mono">srch_v47_20260516_05</span><br>
               <span class="teal">2026-05-16T09:19:22Z</span> retriever.related_pins overlap_current=<span
                 class="bad">0.27</span> idx=<span class="mono">rp_v46_20260515_11</span><br>
               <span class="teal">2026-05-16T09:19:24Z</span> shard.inspect shard=<span class="mono">rp-shard-17</span>
@@ -960,29 +795,15 @@
               <span class="teal">2026-05-16T09:19:31Z</span> cache.inspect surface=<span
                 class="mono">related_pins</span> raw_hit=<span class="ok">94.8%</span> fw_hit=<span
                 class="bad">71.2%</span> stale_hit=<span class="hot">23.4%</span><br>
-              <span class="teal">2026-05-16T09:19:44Z</span> fanout.diff HF_vs_RP topk_diff=<span
-                class="bad">0.73</span> Search_vs_RP=<span class="bad">0.61</span> VS_vs_RP=<span class="mut">0.29
-                noisy</span><br>
-              <span class="teal">2026-05-16T09:19:54Z</span> rank.compare kendall_norm=<span class="bad">0.36</span>
-              ctr_delta=<span class="ok">+0.2%</span> save_delta=<span class="bad">-4.9%</span> hide_delta=<span
-                class="ok">-0.6%</span><br>
               <span class="teal">2026-05-16T09:20:03Z</span> feat_snapshot.read status=<span class="hot">partial</span>
-              missing=<span class="mono">shop_intent_7d, vis_ctx_v2</span> cohort=<span
-                class="mono">fashion_apac_r47</span><br>
+              missing=<span class="mono">shop_intent_7d, vis_ctx_v2</span><br>
               <span class="teal">2026-05-16T09:20:10Z</span> rollout.check region=<span class="mono">ap-south-1</span>
               embed=<span class="mono">v47@61%</span> rp_idx=<span class="mono">v46@100%</span> search_idx=<span
                 class="mono">v47@92%</span><br>
-              <span class="teal">2026-05-16T09:20:18Z</span> mod_sync check=<span class="mut">unknown</span>
-              last_good=<span class="mono">07:54Z</span> note=<span class="mut">old incident maybe same path?</span><br>
               <span class="teal">2026-05-16T09:20:42Z</span> hyp=<span class="hot">possible ANN rebuild lag</span> after
               fresh-tier merge; try forced <span class="mono">v47</span> idx swap first<br>
               <span class="teal">2026-05-16T09:21:13Z</span> replay.swap idx_only=<span class="ok">true</span>
               cache_bypass=<span class="mut">false</span> frozen_feat_snapshot=<span class="ok">true</span><br>
-              <span class="teal">2026-05-16T09:22:09Z</span> replay_job.retry id=<span class="mono">884193</span>
-              reason=<span class="hot">feature snapshot timeout</span> retry_ct=<span class="hot">3</span><br>
-              <span class="teal">2026-05-16T09:23:42Z</span> replay.swap cache_bypass=<span class="ok">true</span>
-              sample=<span class="mono">2k users</span> result=<span class="mut">hard to compare / traffic
-                mix?</span><br>
               <span class="teal">2026-05-16T09:24:01Z</span> idx.swap rp-shard-17 old=<span
                 class="mono">rp_v46_20260515_11</span> new=<span class="mono">rp_v47_20260516_04</span> state=<span
                 class="mut">partial restore</span><br>
@@ -991,11 +812,11 @@
               <span class="teal">2026-05-16T09:24:49Z</span> cache.invalidate shard=<span
                 class="mono">rp-shard-17</span> ack=<span class="mut">mixed</span> p95_lag_ms=<span
                 class="hot">19140</span><br>
-              <span class="teal">2026-05-16T09:25:32Z</span> ann.merge note=<span class="mut">fresh-tier merge
-                done?</span> worker_a says yes, worker_b says still compacting<br>
+              <span class="teal">2026-05-16T09:25:32Z</span> ann.merge note=<span class="mut">worker_a says done;
+                worker_b still compacting</span><br>
               <span class="teal">2026-05-16T09:26:03Z</span> replay_job.finish status=<span class="ok">partial</span>
               restored_overlap=<span class="ok">0.35</span> remaining_gap=<span class="hot">needs cache
-                validation</span> note=<span class="hot">not conclusive</span>
+                validation</span>
             </div>
           </article>
 
@@ -1003,9 +824,9 @@
             <div class="card-h">
               <div>
                 <h3>replay / isolation workflow</h3>
-                <p>current workflow when overlap alert trips</p>
+                <p>rough path used when overlap alert fires</p>
               </div>
-              <div class="badge ok">used a bit</div>
+              <div class="tag">used a bit</div>
             </div>
             <div class="workflow">
               <table>
@@ -1019,170 +840,85 @@
                 <tbody>
                   <tr>
                     <td>1</td>
-                    <td>detect on topK overlap + p95 embedding freshness drift vs 7d matched cohort</td>
-                    <td class="mono">incident id + replay cohort</td>
+                    <td>detect on topK overlap + p95 freshness drift</td>
+                    <td class="mono">incident id</td>
                   </tr>
                   <tr>
                     <td>2</td>
-                    <td>replay same users across HF/RP/Search with frozen feature snapshot</td>
+                    <td>replay same users with frozen feature snapshot</td>
                     <td class="mono">surface diff</td>
                   </tr>
                   <tr>
                     <td>3</td>
-                    <td>swap index only; keep cache + feats fixed</td>
-                    <td class="mono">idx contribution est</td>
+                    <td>swap index only</td>
+                    <td class="mono">idx contribution</td>
                   </tr>
                   <tr>
                     <td>4</td>
-                    <td>bypass cache on sample if diff still large</td>
-                    <td class="mono">cache invalidation check</td>
+                    <td>bypass cache on sample</td>
+                    <td class="mono">cache check</td>
                   </tr>
                   <tr>
                     <td>5</td>
-                    <td>inspect feat snapshot gaps, mod state, fresh-tier merge logs, rollout skew tags</td>
-                    <td class="mono">unknown remains / maybe root cause</td>
+                    <td>inspect snapshot gaps / rollout skew / merge logs</td>
+                    <td class="mono">maybe root cause</td>
                   </tr>
                 </tbody>
               </table>
 
-              <div class="steps">
-                <div class="step">
+              <div class="workflow-grid">
+                <div class="wf">
                   <h4>Detect</h4>
-                  <p>watch topK overlap, p95 age, shard idx age. medians not enough.</p>
+                  <p>Watch topK overlap, p95 embed age, shard idx age.</p>
                 </div>
-                <div class="step">
+                <div class="wf">
                   <h4>Replay</h4>
-                  <p>use replay cohort + frozen feature snapshot. same user snap across surfaces.</p>
+                  <p>Same user snap across HF/RP/Search with frozen feature snapshot.</p>
                 </div>
-                <div class="step">
+                <div class="wf">
                   <h4>Isolate</h4>
-                  <p>swap index only, then bypass cache, then check feature snapshot completeness.</p>
+                  <p>Swap index only, then bypass cache, then inspect missing features.</p>
                 </div>
-                <div class="step">
+                <div class="wf">
                   <h4>Mitigate</h4>
-                  <p>pause rollout, rebuild lagging shards, tighten embedding freshness gate if evidence holds.</p>
+                  <p>Pause rollout, rebuild lagging shards, tighten freshness gates.</p>
                 </div>
               </div>
-
-              <p class="tiny" style="margin-top:10px">
-                TODO: compare_shards still disabled because shard trace join occasionally returns mixed ver tags.
-              </p>
             </div>
           </article>
         </section>
 
-        <section class="split">
-          <article class="card">
-            <div class="card-h">
-              <div>
-                <h3>messy notes / memo-ish</h3>
-                <p>partial hypotheses, not cleaned up</p>
-              </div>
-              <div class="badge">draft</div>
+        <section class="card">
+          <div class="card-h">
+            <div>
+              <h3>scratch</h3>
+              <p>partial hypotheses / copied notes / not cleaned up</p>
             </div>
-            <div class="notes">
-              <ul>
-                <li>looks like RP path still reading older ANN state in at least one APAC slice; not sure cache vs idx
-                  split yet.</li>
-                <li>CTR flat with save loss maybe means retrieval still click-ish but less semantically stable; or maybe
-                  creator mix changed. unclear.</li>
-                <li>feature snapshot miss on <span class="mono">shop_intent_7d</span> probably not enough alone, but
-                  enough to make replay uglier.</li>
-                <li>fresh-tier merge timing may have widened skew window. if true, alert should maybe key on merge
-                  completion + shard age, not just global rollout.</li>
-                <li>VS overlap noisy and traffic thin; i would not use it to close incident even if it looks green.</li>
-                <li>raw cache hit rate should maybe be hidden from primary row because it reads “healthy” when it’s not.
-                </li>
-                <li>not impossible that moderation lag is contributing to rerank disagreement rather than retrieval
-                  drift. evidence weak tho.</li>
-              </ul>
-            </div>
-          </article>
-
-          <article class="card">
-            <div class="card-h">
-              <div>
-                <h3>copy/paste notes</h3>
-                <p>from old doc / incident thread / maybe stale</p>
-              </div>
-              <div class="badge err">messy</div>
-            </div>
-            <div class="footer-note">
-              <pre># r47 APAC note
-- if overlap restores after idx-only swap, still verify cache age hist before calling it done
-- replay on VS not trusted, traffic too thin + cohort mismatch
-- mod sync lag was an old RP-only issue, not sure same thing here
-- maybe compare save/click split by creator cluster later (not in this page yet)
-- ANN backfill queue got weird after fresh-tier merge last time too
-- ask search infra if srch_v47 had same embed freshness gate or not
-- TODO: shard table probably belongs here, but page is already cramped
-
-# random
-- naming inconsistent: topK overlap vs overlap_current vs fanout.diff. fix later maybe.
-- should add snapshot lineage id on page header
-- add one chart for creator-churn cohorts? maybe too much
-- no, keep narrow for now
+            <div class="tag">draft</div>
+          </div>
+          <div class="scratch">
+            <pre>- looks like RP path still reading older ANN state in one APAC slice; cache vs idx split still not clean
+- CTR flat with save loss maybe means retrieval still click-ish but less semantically stable
+- feature snapshot miss on shop_intent_7d probably not enough alone, but enough to make replay uglier
+- fresh-tier merge timing may have widened skew window
+- raw cache hit should maybe not be in top row; it looks "healthy" when it isn't
+- VS overlap still too noisy to use as incident closer
+- TODO: add shard table w/ host drain_state + idx age later
+- naming still inconsistent: topK overlap vs overlap_current vs fanout.diff
 </pre>
-            </div>
-          </article>
+          </div>
         </section>
       </div>
     </main>
   </div>
 
   <script>
-    Chart.defaults.color = '#93a0b0';
-    Chart.defaults.borderColor = 'rgba(255,255,255,.08)';
+    Chart.defaults.color = '#93a1b1';
+    Chart.defaults.borderColor = 'rgba(255,255,255,.07)';
     Chart.defaults.font.family = 'Satoshi, sans-serif';
     Chart.defaults.plugins.legend.labels.usePointStyle = true;
 
-    const grid = {
-      color: 'rgba(255,255,255,.055)'
-    };
-
-    new Chart(document.getElementById('ageChart'), {
-      type: 'bar',
-      data: {
-        labels: ['p50', 'p75', 'p90', 'p95'],
-        datasets: [
-          {
-            label: 'HF',
-            data: [1.3, 2.6, 4.8, 6.2],
-            backgroundColor: '#73c5c8',
-            borderRadius: 6
-          },
-          {
-            label: 'RP',
-            data: [6.5, 9.1, 13.8, 18.4],
-            backgroundColor: '#c97cab',
-            borderRadius: 6
-          },
-          {
-            label: 'Search',
-            data: [2.1, 3.2, 5.9, 7.3],
-            backgroundColor: '#76a8e8',
-            borderRadius: 6
-          },
-          {
-            label: 'VS',
-            data: [3.9, 5.8, 8.7, 11.2],
-            backgroundColor: '#8f84da',
-            borderRadius: 6
-          }
-        ]
-      },
-      options: {
-        maintainAspectRatio: false,
-        scales: {
-          x: { grid: { display: false } },
-          y: {
-            beginAtZero: true,
-            title: { display: true, text: 'hours' },
-            grid
-          }
-        }
-      }
-    });
+    const grid = { color: 'rgba(255,255,255,.05)' };
 
     new Chart(document.getElementById('overlapChart'), {
       type: 'line',
@@ -1193,26 +929,26 @@
             label: 'HF↔RP overlap',
             data: [0.41, 0.40, 0.39, 0.38, 0.35, 0.31, 0.27],
             borderColor: '#c97cab',
-            backgroundColor: 'rgba(201,124,171,.12)',
+            backgroundColor: 'rgba(201,124,171,.10)',
             fill: true,
-            tension: .28,
+            tension: .26,
             pointRadius: 2
           },
           {
             label: 'CTR delta',
             data: [0.0, 0.1, 0.1, 0.0, 0.1, 0.2, 0.2],
-            borderColor: '#77c785',
-            tension: .28,
-            pointRadius: 2,
-            yAxisID: 'y1'
+            borderColor: '#7abf8a',
+            yAxisID: 'y1',
+            tension: .26,
+            pointRadius: 2
           },
           {
             label: 'save delta',
             data: [0.0, -0.4, -0.9, -1.3, -2.2, -3.8, -4.9],
-            borderColor: '#e0ae67',
-            tension: .28,
-            pointRadius: 2,
-            yAxisID: 'y1'
+            borderColor: '#d9a86d',
+            yAxisID: 'y1',
+            tension: .26,
+            pointRadius: 2
           }
         ]
       },
@@ -1221,15 +957,13 @@
         scales: {
           x: { grid: { display: false } },
           y: {
-            min: 0,
-            max: 0.5,
+            min: 0, max: .5,
             title: { display: true, text: 'topK overlap' },
             grid
           },
           y1: {
             position: 'right',
-            min: -6,
-            max: 1,
+            min: -6, max: 1,
             title: { display: true, text: 'engagement delta %' },
             grid: { drawOnChartArea: false }
           }
@@ -1245,14 +979,14 @@
           {
             label: 'kendall norm',
             data: [0.36, 0.33, 0.19, 0.17, 0.12],
-            backgroundColor: ['#e0ae67', '#c97cab', '#76a8e8', '#73c5c8', '#77c785'],
-            borderRadius: 6
+            backgroundColor: ['#d9a86d', '#c97cab', '#6e9fdb', '#72b9bc', '#7abf8a'],
+            borderRadius: 5
           },
           {
             label: 'unknown pct',
             data: [0.04, 0.06, 0.02, 0.01, 0.01],
-            backgroundColor: '#657284',
-            borderRadius: 6
+            backgroundColor: '#667385',
+            borderRadius: 5
           }
         ]
       },
@@ -1261,8 +995,7 @@
         scales: {
           x: { grid: { display: false } },
           y: {
-            min: 0,
-            max: 0.5,
+            min: 0, max: .5,
             title: { display: true, text: 'distance / unknown' },
             grid
           }
